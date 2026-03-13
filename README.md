@@ -12,7 +12,7 @@ Servidor MCP (Model Context Protocol) para Bitbucket Cloud que expone operacione
 
 > **Nota:** Los App Passwords de Bitbucket estan deprecados. Desde septiembre 2025 no se pueden crear nuevos y en junio 2026 dejaran de funcionar. Usar API Tokens en su lugar.
 
-1. Ir a [Bitbucket API Tokens](https://bitbucket.org/account/settings/api-tokens/)
+1. Ir a [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
 2. Click en **Create token**
 3. Asignar permisos: **Pull requests: Read & Write**, **Repositories: Read**
 4. Copiar el token generado
