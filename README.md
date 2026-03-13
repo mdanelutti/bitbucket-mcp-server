@@ -6,12 +6,14 @@ Servidor MCP (Model Context Protocol) para Bitbucket Cloud que expone operacione
 
 - Node.js >= 18
 - Una cuenta de Bitbucket Cloud
-- Un **App Password** de Bitbucket con permisos de lectura/escritura en Pull Requests
+- Un **API Token** de Bitbucket con permisos de lectura/escritura en Pull Requests
 
-### Crear un App Password
+### Crear un API Token
 
-1. Ir a [Bitbucket App Passwords](https://bitbucket.org/account/settings/app-passwords/)
-2. Click en **Create app password**
+> **Nota:** Los App Passwords de Bitbucket estan deprecados. Desde septiembre 2025 no se pueden crear nuevos y en junio 2026 dejaran de funcionar. Usar API Tokens en su lugar.
+
+1. Ir a [Bitbucket API Tokens](https://bitbucket.org/account/settings/api-tokens/)
+2. Click en **Create token**
 3. Asignar permisos: **Pull requests: Read & Write**, **Repositories: Read**
 4. Copiar el token generado
 
@@ -34,7 +36,7 @@ cp .env.example .env
 
 ```env
 BITBUCKET_USERNAME=tu-email@ejemplo.com
-BITBUCKET_API_TOKEN=tu-app-password
+BITBUCKET_API_TOKEN=tu-api-token
 BITBUCKET_WORKSPACE=tu-workspace
 ```
 
@@ -43,7 +45,7 @@ BITBUCKET_WORKSPACE=tu-workspace
 | Variable | Requerida | Default | Descripcion |
 |---|---|---|---|
 | `BITBUCKET_USERNAME` | Si | - | Email o username de Bitbucket |
-| `BITBUCKET_API_TOKEN` | Si | - | App Password de Bitbucket |
+| `BITBUCKET_API_TOKEN` | Si | - | API Token de Bitbucket |
 | `BITBUCKET_WORKSPACE` | No | - | Workspace por defecto (evita pasarlo en cada llamada) |
 | `BITBUCKET_ENABLE_DANGEROUS` | No | `false` | Habilita operaciones destructivas (merge, decline) |
 | `TRANSPORT` | No | `stdio` | Modo de transporte: `stdio` o `http` |
@@ -96,7 +98,7 @@ O manualmente en el archivo de configuracion `~/.claude/settings.json` (global) 
       "args": ["/ruta/absoluta/a/bitbucket-mcp-server/dist/index.js"],
       "env": {
         "BITBUCKET_USERNAME": "tu-email@ejemplo.com",
-        "BITBUCKET_API_TOKEN": "tu-app-password",
+        "BITBUCKET_API_TOKEN": "tu-api-token",
         "BITBUCKET_WORKSPACE": "tu-workspace"
       }
     }
@@ -118,7 +120,7 @@ Agregar en `~/Library/Application Support/Claude/claude_desktop_config.json` (ma
       "args": ["/ruta/absoluta/a/bitbucket-mcp-server/dist/index.js"],
       "env": {
         "BITBUCKET_USERNAME": "tu-email@ejemplo.com",
-        "BITBUCKET_API_TOKEN": "tu-app-password",
+        "BITBUCKET_API_TOKEN": "tu-api-token",
         "BITBUCKET_WORKSPACE": "tu-workspace"
       }
     }
