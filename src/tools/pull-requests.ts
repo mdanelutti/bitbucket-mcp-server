@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { BitbucketClient } from '../bitbucket-client.js';
 import type { Config } from '../config.js';
 import type {
+  BitbucketUser,
   BitbucketPullRequest,
   BitbucketComment,
   BitbucketActivity,
@@ -174,6 +175,35 @@ export function registerPullRequestTools(
     }
   );
 
+  server.tool(
+    'search_workspace_members',
+    'Search for workspace members by display name. Useful for finding reviewer UUIDs.',
+    {
+      workspace: workspaceParam,
+      query: z.string().describe('Display name (or part of it) to search for'),
+    },
+    async ({ workspace, query }) => {
+      const members = await client.getPaginated<{ user: BitbucketUser }>(
+        `/workspaces/${workspace}/members`
+      );
+
+      const queryLower = query.toLowerCase();
+      const matches = members.filter((m) =>
+        m.user.display_name.toLowerCase().includes(queryLower)
+      );
+
+      if (matches.length === 0) {
+        return textResult(`No members found matching "${query}" in workspace ${workspace}`);
+      }
+
+      const formatted = matches
+        .map((m) => `- ${m.user.display_name} | UUID: ${m.user.uuid} | Nickname: ${m.user.nickname ?? 'N/A'}`)
+        .join('\n');
+
+      return textResult(`Found ${matches.length} member(s) matching "${query}":\n\n${formatted}`);
+    }
+  );
+
   // ─── WRITE TOOLS ───────────────────────────────────────────
 
   server.tool(
@@ -191,8 +221,9 @@ export function registerPullRequestTools(
         .optional()
         .describe('Array of reviewer UUIDs or account IDs'),
       close_source_branch: z.boolean().default(true).describe('Delete source branch after merge'),
+      draft: z.boolean().default(false).describe('Create PR as draft'),
     },
-    async ({ workspace, repo_slug, title, source_branch, destination_branch, description, reviewers, close_source_branch }) => {
+    async ({ workspace, repo_slug, title, source_branch, destination_branch, description, reviewers, close_source_branch, draft }) => {
       const body: Record<string, unknown> = {
         title,
         source: { branch: { name: source_branch } },
@@ -207,6 +238,9 @@ export function registerPullRequestTools(
       }
       if (reviewers?.length) {
         body.reviewers = reviewers.map((r) => ({ uuid: r }));
+      }
+      if (draft) {
+        body.draft = true;
       }
 
       const pr = await client.post<BitbucketPullRequest>(
